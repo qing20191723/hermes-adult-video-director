@@ -15,10 +15,11 @@ trigger: adult video, AV分镜, 成人短剧, NC-17 script
 用户输入剧本或创意后，你按以下四步交互输出。每步等用户确认。
 
 ```
+步骤0：先问用户——横屏16:9还是竖屏9:16？得到回答后进入步骤1。全流程所有输出都用此比例。
 步骤1：剧本（优化并结构化用户输入）
 步骤2：分镜脚本（每镜含画面/表情/镜头运动/光线/声音/接前镜）
 步骤3：图片资产提示词（场景/道具用文生图，做爱体位用图生图编辑）
-步骤4：视频提示词（成人用Wan2.7，正常用Seedance 2.0，9:16或16:9由用户指定）
+步骤4：视频提示词（成人用Wan2.7，正常用Seedance 2.0，使用步骤0用户指定的比例）
 ```
 
 ---
@@ -108,9 +109,47 @@ trigger: adult video, AV分镜, 成人短剧, NC-17 script
 
 **两种格式都要做到**：对白嵌入叙述中（`她说："……"`），不写字幕；镜头在动作叙述内部自然流动，不开头标"Shot 1: 中景"；双语对照（英文prompt + 中文翻译）；电影级氛围。
 
-**成人内容（Wan2.7）**要把所有性细节写进镜头叙述——体位是什么、阴茎怎么进出、什么节奏、体液什么状态、什么声音、人物什么表情和呼吸。不是泛写"两人交合"——要写可见的具体动作和生理反应。同时规避所有夸张用语（青筋凸起、眼球翻白、尖叫、嘶吼等）。声音要写到五层：环境底噪、动作拟音（噗呲声/床架声）、情绪声（呼吸/轻吟）、空间混响、配乐（可选）。
+**成人内容（Wan2.7）**：必须用 `[0-Xs] [Xs-Ys] [Ys-15s]` 时间戳分段，每15秒一个Sequence。每Sequence输出前检查台词容量：中文正常语速约3字/秒，15秒最多容纳约45字台词（约3句短对白）。超过立即拆分到下一Sequence。跨Sequence用[13-15s]和[0-2s]重叠窗做A-B-C桥接确认。把所有性细节写进镜头叙述。
+每Sequence输出模板：
+```text
+【Wan2.7 — Sequence Na｜场景·阶段】
+全片时间：XX:XX–XX:XX | 台词：N句/N字 | ✅可容纳 / ⚠️临界 / ❌超载需拆分
+> 与上一Sequence重叠窗：[13-15s]←→[0-2s]——[具体C状态描述]
 
-**正常内容（Seedance 2.0）**使用Style前缀引用电影风格锚点（王家卫暧昧、日式粉红电影、韩国情色电影等），镜头叙述同样融入动作之中，情绪描写体现眼神->呼吸->肩->身体->声线的五轨拆解。
+prompt:
+"generate a multi-shot video. cinematic photorealistic style, [比例] frame, [灯光], high detail skin texture.
+生成多镜头视频。电影级写实风格，[比例]构图，[灯光]，高细节皮肤纹理。
+
+[0-Xs] [镜头运动]: [英文动作叙述]。\n[0-Xs] [镜头运动]: [中文翻译]。
+
+[Xs-Ys] [镜头运动]: [英文]。\n[Xs-Ys] [镜头运动]: [中文]。对白嵌入叙述。
+
+[Ys-15s] [镜头运动]: [英文结束状态描述]。\n[Ys-15s] [镜头运动]: [中文]。
+→ 留C状态: [具体可承接的状态描述]"
+
+negative_prompt: "low resolution, worst quality, deformed body, bad anatomy, extra fingers, blurred, distorted face, cartoon, 3D rendering, plastic skin, watermark, text, logo"
+resolution: "1080P"
+ratio: "[用户步骤0指定的比例]"
+duration: 15
+prompt_extend: false
+```
+
+**正常内容（Seedance 2.0）**使用Style前缀引用电影风格锚点（王家卫暧昧、日式粉红电影、韩国情色电影等），镜头叙述同样融入动作之中，情绪描写体现眼神->呼吸->肩->身体->声线的五轨拆解。同样用`[0-Xs][Xs-Ys]`时间戳分段。输出模板：
+```text
+【Seedance 2.0 — Sequence N｜场景名称】
+全片时间：XX:XX–XX:XX | 台词：N句/N字 | ✅可容纳
+
+Style: [风格锚点], Cinematic, Photorealistic, 35mm Film Quality,
+Professional Color Grading, Sharp Focus, High Detail Texture,
+Film Grain, Depth of Field Mastery, ARRI ALEXA Aesthetic. Duration: 15s.
+电影级写实风格，[风格锚点中文]，35mm胶片质感，ARRI ALEXA摄影。
+
+[0-Xs] [镜头运动]: [英文]。\n[0-Xs] [镜头运动]: [中文]。
+[Xs-Ys] [镜头运动]: [英文]。对白嵌入。\n[Xs-Ys] [镜头运动]: [中文]。
+[Ys-15s] [镜头运动]: [英文]。\n[Ys-15s] [镜头运动]: [中文]。
+
+1080p / [比例] / duration: 15
+```
 
 **每个Sequence的结束状态**必须留下可承接的东西——一个未完成的手势、一句说到一半的台词、一个仍在运动的镜头——让下一Sequence可以从这里自然延续。
 
