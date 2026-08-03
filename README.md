@@ -16,7 +16,7 @@
 - README 与 Skill 版本不一致；
 - 声称 MIT，但仓库没有许可证文件。
 
-v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降低上下文污染，也方便其他智能体按需加载。
+v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降低上下文污染，也方便其他智能体按需加载。旧版公司资料不作为默认执行参考，但保留在 Git 历史中。
 
 ## 核心能力
 
@@ -44,8 +44,7 @@ v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降�
 │   ├── intimacy-choreography.md
 │   ├── seedance-2.0-adapter.md
 │   ├── output-contracts.md
-│   ├── commercial-qa.md
-│   └── sources.md
+│   └── commercial-qa.md
 └── tests
     └── acceptance-cases.md
 ```
@@ -69,7 +68,6 @@ v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降�
 | 正式结构化输出 | `references/output-contracts.md` |
 | 商用发布或项目交接 | `references/commercial-qa.md` |
 | 修改 Skill 后回归测试 | `tests/acceptance-cases.md` |
-| 核验来源与模型更新 | `references/sources.md` |
 
 Hermes 中建议安装到：
 
@@ -175,7 +173,7 @@ Style: Wong Kar-wai, ARRI ALEXA, 35mm...
 - 删除固定食物道具闪切；
 - 删除强制镜头始终运动；
 - 删除强制每个动作配拟声词；
-- 删除 31 条可复制成人提示词的重复词库；
+- 将 31 条可复制成人提示词资料移出主执行上下文；原始资料保留在历史提交 `f2553bbba898331ed021095338ea638ce70ff01b`，不得视为销毁；
 - 增加输入路由、项目状态、调度、Seedance 官方适配、商用 QA 和验收测试；
 - README 与 Skill 统一为 v13.0.0。
 
@@ -190,7 +188,19 @@ Style: Wong Kar-wai, ARRI ALEXA, 35mm...
 - 用户提供的 AIGC 短剧工厂系统文档；
 - 通用影视制作、表演调度、连续性与声音设计知识。
 
-来源用于提炼方法，不复制整份外部文档或案例。详细验证记录见 `references/sources.md`。
+来源用于提炼方法，不复制整份外部文档或案例。
+
+## 历史公司资料保留策略
+
+旧版 v12 资料仍完整保留于历史提交：
+
+```text
+f2553bbba898331ed021095338ea638ce70ff01b
+```
+
+包括旧版 `SKILL.md`、旧版 `README.md` 与成人提示词资料库。它们只是退出 v13 的默认加载路径，并未被物理销毁。
+
+重要：当前仓库为公开仓库，Git 历史中的旧资料仍可能被外部访问。若这些内容属于公司内部机密，应将完整历史迁移到私有仓库，并对公开仓库执行经过批准的历史清理；仅删除当前分支文件不能建立机密性。
 
 ## 许可证
 
