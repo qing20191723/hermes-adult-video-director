@@ -1,58 +1,205 @@
-# AIGC成人短剧导演系统 v11
+# AIGC 成人亲密短剧导演系统 v13
 
-> AI-powered adult short drama video production pipeline. From script to final AI video prompts.
+一个面向**成年、自愿、合法授权**成人亲密剧情的 AIGC 制作 Skill。它不是提示词词汇库，而是一套从创作简报、剧本、亲密场面调度、固定资产、15 秒 Sequence、分镜、模型适配到商用 QA 的完整生产协议。
 
-## What It Does
+## 为什么重构
 
-This skill turns an AI assistant into a complete adult short drama director. Input a story idea or script, and it walks you through a 5-step interactive pipeline:
+旧版把情绪词、动作体位、拟声词、镜头词、固定模型 ID 和输出模板堆在一个文件里，容易出现：
 
+- 动作词替代人物动机；
+- 每段机械套四幕、固定镜头数和强制运镜；
+- 所有亲密动作强制配拟声词；
+- 固定使用未经持续验证的模型 ID；
+- 把 Seedance 2.0 简化为电影风格前缀；
+- 多段连续只写“接上一段”，没有展开动作相位；
+- 缺少成年、自愿、肖像授权、平台条款和商用交付检查；
+- README 与 Skill 版本不一致；
+- 声称 MIT，但仓库没有许可证文件。
+
+v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降低上下文污染，也方便其他智能体按需加载。
+
+## 核心能力
+
+- 输入路由：规则、剧情、素材、混合任务、修订任务分别处理；
+- 项目状态：剧情、资产、连续性、准入四类锚点；
+- 叙事剧本：目标、冲突、关系变化和段尾状态；
+- 亲密调度：同意、主动—回应、身体几何、接触地图、姿态转换；
+- 固定资产：角色、场景、服装、道具统一命名与授权状态；
+- Sequence：按模型时长拆分，识别超载和低载；
+- 专业分镜：Blocking、轴线、视线、切点、景别、运镜动机、声音；
+- Seedance 2.0：按官方多模态能力分配每个参考素材的职责；
+- 商用 QA：权利链、连续性、模型能力、版本和交接包；
+- 验收用例：防止后续修改重新退化为词库生成器。
+
+## 仓库结构
+
+```text
+.
+├── SKILL.md
+├── README.md
+├── CHANGELOG.md
+├── LICENSE
+├── references
+│   ├── filmmaking-grammar.md
+│   ├── intimacy-choreography.md
+│   ├── seedance-2.0-adapter.md
+│   ├── output-contracts.md
+│   ├── commercial-qa.md
+│   └── sources.md
+└── tests
+    └── acceptance-cases.md
 ```
-Step 0: Ask aspect ratio (16:9 or 9:16)
-Step 1: Script -> structured 4-act screenplay
-Step 2: Storyboard -> shot-by-shot shooting script
-Step 3: Image Assets -> scene/prop prompts + sex position reference images
-Step 4: Video Prompts -> Wan2.7 (adult) or Seedance 2.0 (normal)
+
+## 智能体加载方式
+
+### 最小加载
+
+1. 完整读取 `SKILL.md`；
+2. 根据任务读取对应参考文件；
+3. 正式交付前读取 `references/output-contracts.md`；
+4. 商用项目再读取 `references/commercial-qa.md`。
+
+### 任务映射
+
+| 任务 | 额外加载 |
+|---|---|
+| 剧本、Sequence、分镜 | `references/filmmaking-grammar.md` |
+| 亲密场面 | `references/intimacy-choreography.md` |
+| Seedance 2.0 | `references/seedance-2.0-adapter.md` |
+| 正式结构化输出 | `references/output-contracts.md` |
+| 商用发布或项目交接 | `references/commercial-qa.md` |
+| 修改 Skill 后回归测试 | `tests/acceptance-cases.md` |
+| 核验来源与模型更新 | `references/sources.md` |
+
+Hermes 中建议安装到：
+
+```text
+creative/adult-video-director/
 ```
 
-## Features
+并保持上述相对路径不变。
 
-- **Self-contained**: 39 emotions with 5-track breakdown (eyes->breath->shoulders->body->voice), 14 sex positions with full posture descriptions, camera vocabulary, lighting library -- no external references needed
-- **Dual video routing**: NC-17 content -> Wan2.7 (with timestamps, dialogue capacity checks, A-B-C bridge protocol). Normal content -> Seedance 2.0 (with cinematic style anchors)
-- **15-second Sequence system**: A-B-C continuity bridge protocol ensures smooth transitions between Sequences. Dialogue capacity validated per segment (max ~3 short lines per 15s)
-- **Image generation ready**: Scene/prop prompts for Seedream 5.0 Pro text-to-image. Sex position prompts for Seedream 5.0 Pro Edit (reference image compositing)
-- **Production rules embedded**: No subtitles, no exaggerated expressions, flat-visible descriptive language, bright clean lighting only
+## 快速开始
 
-## Quick Start
+输入：
 
-Trigger the skill by mentioning any of these keywords in Hermes Agent:
-- `adult video`, `AV分镜`, `成人短剧`, `NC-17 script`
+```text
+加载 adult-video-director。
+项目为 9:16、总时长 45 秒、单段 15 秒。
+所有角色均为 25 岁以上虚构成年人，素材均已授权。
+先根据下面的故事输出创作简报，不要直接输出视频提示词：
+……
+```
 
-Just describe your story idea and the system guides you through each step.
+然后按模块推进：
 
-## Tools Used
+```text
+输出短剧剧本
+输出亲密场面调度
+输出固定资产
+输出15秒拆分
+输出Seedance 2.0提示词
+执行商用QA
+```
 
-| Stage | Tool | Model ID |
-|-------|------|----------|
-| Scene images | Seedream 5.0 Pro | `bytedance/seedream-v5.0-pro/text-to-image` |
-| Prop images | Seedream 5.0 Pro | same as above |
-| Position images | Seedream 5.0 Pro Edit | `bytedance/seedream-v5.0-pro/edit` |
-| Video (adult) | Wan2.7 | `wan2.7-t2v-2026-06-12` |
-| Video (normal) | Seedance 2.0 | Style-prefix format |
+用户明确要求一次性完成时：
 
-## Knowledge Base
+```text
+按完整生产链输出，并在每个模块后更新锚点。
+```
 
-**39 emotions** in 10 categories: flirtatious, pleasure, afterglow, teasing, disappointment, grievance, intense, cold, conflicted, special states. Each with 5-track motion sequence (eyes, breath, shoulders, body/hands, voice).
+## Seedance 2.0 适配原则
 
-**14 positions**: Penetrative (cowgirl, doggy, standing doggy, edge-standing, missionary, spooning), oral (fellatio, cunnilingus, 69), non-penetrative (titjob, intercrural, French kiss), manual (handjob, fingering).
+官方资料显示，Seedance 2.0 支持文字、图片、视频和音频的多模态参考，并可参考构图、动作、运镜、特效、声音和节奏，支持最高 15 秒多镜头音视频、延长与编辑。
 
-**9 camera movements** + **8 lighting types** + **6 film style anchors**.
+因此 v13 不再强制：
 
-## Repository
+```text
+Style: Wong Kar-wai, ARRI ALEXA, 35mm...
+```
 
-- **Skill**: `SKILL.md` -- the complete self-contained system prompt
-- **GitHub**: https://github.com/qing20191723/hermes-adult-video-director
-- **Hermes skill path**: `creative/adult-video-director`
+而是要求：
 
-## License
+```text
+@角色正面：只负责面部与发型一致性
+@角色全身：负责身形、服装与配饰
+@场景图：负责空间结构与光源
+@参考视频：只参考运镜与动作节奏，不复制人物
+@音频：只参考环境和节奏
+```
 
-MIT
+不同网页入口、API 或第三方工作流的素材数量和参数可能不同，正式生产必须记录“模型版本、入口、已验证日期和来源”，不能硬编码未经验证的模型 ID。
+
+## 设计准则
+
+### 叙事先于动作
+
+每一场亲密行为必须改变人物关系、冲突或选择。删掉行为后剧情完全不变，说明它只是填充。
+
+### 几何先于标签
+
+不只写动作名称，而要写清承重点、方向、接触点、视线、转换路径和镜头可见信息。
+
+### 回应先于升级
+
+任何互动采用“发起—接收—回应—再决定”的反应链。身体反应、沉默、醉态或哭泣不自动代表同意。
+
+### 声音先有来源
+
+环境、材质、距离、呼吸和空间混响决定声音。拟声词是可选表达，不是每个动作必须填写的质量指标。
+
+### 模型能力先核验
+
+模型不支持的尾帧、音频、负面提示词、延长或编辑能力，不写进最终参数。
+
+## 商用准入
+
+本 Skill 只适用于：
+
+- 明确成年人；
+- 成年人之间知情、自愿；
+- 现实人物素材已授权；
+- 剧本、肖像、声音、音乐、字体、品牌和参考素材权利清晰；
+- 所用模型、平台与目标地区允许；
+- 发布前有人类终审。
+
+以下内容不进入成人生产：未成年人或年龄不明、非自愿、失去同意能力、偷拍、未经授权真人色情化、乱伦、兽交、性剥削及规避审核或法律责任的请求。
+
+## 版本迁移
+
+### v12 → v13
+
+- 删除硬编码 Wan / Seedream 模型 ID；
+- 删除固定“成人走某模型、正常走 Seedance”的内容路由；
+- 删除强制明亮灯光；
+- 删除固定食物道具闪切；
+- 删除强制镜头始终运动；
+- 删除强制每个动作配拟声词；
+- 删除 31 条可复制成人提示词的重复词库；
+- 增加输入路由、项目状态、调度、Seedance 官方适配、商用 QA 和验收测试；
+- README 与 Skill 统一为 v13.0.0。
+
+## 来源说明
+
+本次重构参考：
+
+- 仓库旧版 `SKILL.md` 与成人提示词参考库；
+- ByteDance Seedance 2.0 官方发布资料；
+- 用户提供的《官方 2.0 详细资料》；
+- 用户提供的《Seedance 2.0 使用教程》；
+- 用户提供的 AIGC 短剧工厂系统文档；
+- 通用影视制作、表演调度、连续性与声音设计知识。
+
+来源用于提炼方法，不复制整份外部文档或案例。详细验证记录见 `references/sources.md`。
+
+## 许可证
+
+仓库代码与原创文档采用 MIT License。许可证不涵盖：
+
+- 用户上传素材；
+- 第三方模型；
+- 第三方参考图、视频、音频；
+- 现实人物肖像或声音；
+- 字体、音乐、品牌和平台条款。
+
+使用者必须自行取得相应权利。
