@@ -1,5 +1,16 @@
 # Changelog
 
+## 13.1.0 — 2026-08-04
+
+### Optional legacy corpus
+
+- Reconnected the v12 adult prompt corpus to the default routing logic as an optional module.
+- Kept the corpus disabled by default; loading requires an explicit user authorization scoped to the current task.
+- Added a fixed historical source pointer, minimal-section retrieval, revocation, expiry, transformation, and audit rules.
+- Added project-state fields and commercial QA records for every legacy-corpus call.
+- Added regression cases preventing implicit, inherited, or cross-project authorization.
+- The legacy corpus body remains outside the current public tree and is read from commit `f2553bbba898331ed021095338ea638ce70ff01b` only after authorization.
+
 ## 13.0.0 — 2026-08-03
 
 ### Architecture
