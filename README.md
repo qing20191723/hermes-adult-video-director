@@ -44,7 +44,8 @@ v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降�
 │   ├── intimacy-choreography.md
 │   ├── seedance-2.0-adapter.md
 │   ├── output-contracts.md
-│   └── commercial-qa.md
+│   ├── commercial-qa.md
+│   └── sources.md
 └── tests
     └── acceptance-cases.md
 ```
@@ -68,6 +69,7 @@ v13 将**执行协议、专业知识、模型适配和商用 QA 分层**，降�
 | 正式结构化输出 | `references/output-contracts.md` |
 | 商用发布或项目交接 | `references/commercial-qa.md` |
 | 修改 Skill 后回归测试 | `tests/acceptance-cases.md` |
+| 核验来源与模型更新 | `references/sources.md` |
 
 Hermes 中建议安装到：
 
@@ -188,7 +190,7 @@ Style: Wong Kar-wai, ARRI ALEXA, 35mm...
 - 用户提供的 AIGC 短剧工厂系统文档；
 - 通用影视制作、表演调度、连续性与声音设计知识。
 
-来源用于提炼方法，不复制整份外部文档或案例。
+来源用于提炼方法，不复制整份外部文档或案例。详细验证记录见 `references/sources.md`。
 
 ## 历史公司资料保留策略
 
