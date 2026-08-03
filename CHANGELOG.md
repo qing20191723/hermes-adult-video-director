@@ -20,7 +20,7 @@
 ### Intimacy direction
 
 - Replaced position-keyword assembly with consent-aware choreography, body geometry, contact maps, reaction chains, transition paths, wardrobe state, and aftercare.
-- Removed forced onomatopoeia and repeated explicit prompt recipes.
+- Removed forced onomatopoeia from the active execution path and moved repeated explicit prompt recipes out of the default context; the original company materials remain recoverable in historical commit `f2553bbba898331ed021095338ea638ce70ff01b`.
 - Added a strict adults-only, consensual, authorized-content gate.
 - Added research language that separates observable performance from psychological diagnosis.
 
@@ -34,10 +34,10 @@
 ### Commercial delivery
 
 - Added rights-chain checks, model/platform verification, continuity QA, manifest fields, file naming, and handoff package requirements.
-- Added acceptance tests and source-verification records.
+- Added acceptance tests.
 - Added an actual MIT `LICENSE` file.
 - Synchronized README and Skill versions.
 
 ## 12.x
 
-Legacy monolithic version containing script, storyboard, asset, model, emotion, position, sound, and prompt-corpus rules in one file.
+Legacy monolithic version containing script, storyboard, asset, model, emotion, position, sound, and prompt-corpus rules in one file. The original files remain preserved in Git history at `f2553bbba898331ed021095338ea638ce70ff01b`; they are not part of the v13 default load path.
