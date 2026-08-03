@@ -34,7 +34,7 @@
 ### Commercial delivery
 
 - Added rights-chain checks, model/platform verification, continuity QA, manifest fields, file naming, and handoff package requirements.
-- Added acceptance tests.
+- Added acceptance tests and source-verification records.
 - Added an actual MIT `LICENSE` file.
 - Synchronized README and Skill versions.
 
