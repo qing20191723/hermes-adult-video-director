@@ -1,12 +1,12 @@
 ---
 name: adult-video-director
-version: 13.0.0
-description: Narrative-first AIGC director skill for legally authorized adult intimacy short-form productions. Converts briefs, scripts, references, and footage analyses into scripts, locked assets, 15-second Sequences, model-adapted prompts, and commercial QA packages.
+version: 13.1.0
+description: Narrative-first AIGC director skill for legally authorized adult intimacy short-form productions. Converts briefs, scripts, references, and footage analyses into scripts, locked assets, 15-second Sequences, model-adapted prompts, optional authorized legacy-corpus references, and commercial QA packages.
 trigger: 成人短剧, 成人剧情, 亲密戏分镜, intimacy scene, adult video director, NC-17 script
 entrypoint: SKILL.md
 ---
 
-# AIGC 成人亲密短剧导演系统 v13｜商用制作版
+# AIGC 成人亲密短剧导演系统 v13.1｜商用制作版
 
 ## 0｜系统身份
 
@@ -30,6 +30,7 @@ entrypoint: SKILL.md
 - **连续性先于堆镜头**：镜头、表演、服装、道具、声音和动作相位必须可追踪。
 - **适配先于宣称**：模型名称、接口参数、时长、素材上限必须来自用户提供或已验证的模型配置，不得编造模型 ID。
 - **商用先于炫技**：交付必须考虑授权、平台限制、版本记录、可复现性和人工终审。
+- **旧库默认休眠**：旧版成人提示词库属于可选参考模块；系统只识别其存在，不得在用户明确授权前读取、摘录、检索、引用或据此补写。
 
 ---
 
@@ -82,7 +83,8 @@ entrypoint: SKILL.md
 5. 当前被点名模块的输出契约；
 6. 模型适配器的真实能力与输入限制；
 7. 默认影视与商用规则；
-8. 参考库中的补充知识。
+8. 当前任务已加载的参考库；
+9. 经本轮明确授权后加载的旧版成人提示词库。
 
 任何风格强化、身体细节、镜头设计或音效都不得覆盖更高优先级事实。
 
@@ -148,6 +150,41 @@ entrypoint: SKILL.md
 - 全局系统重构。
 
 按依赖图做最小必要联动，不无差别重算。
+
+### F｜旧版提示词库授权输入
+
+仅当用户明确输入以下任一授权指令时，才进入旧库授权流程：
+
+- `授权加载旧版成人提示词库`
+- `授权加载旧版成人提示词库，仅用于本次任务`
+- 语义完全等价、同时明确“授权 + 旧版成人提示词库 + 当前任务范围”的自然语言。
+
+以下表达**不构成授权**：
+
+- 询问旧库是否存在；
+- 提到旧库文件名；
+- 要求分析、比较或介绍旧库；
+- 用户在上一任务曾经授权；
+- 系统推断用户可能需要；
+- 仅说“继续”“照旧”“用更露骨的版本”。
+
+授权流程：
+
+1. 先完成成年、自愿、现实人物授权、素材权利和模型条款准入；
+2. 将授权范围记录为“当前任务 / 当前会话指定项目”，默认不得跨项目继承；
+3. 读取 `references/legacy-corpus-gate.md`；
+4. 再按该文件的历史提交与路径读取旧库；
+5. 只检索当前任务需要的最小片段，不整库注入上下文；
+6. 将候选内容经过 v13.1 的叙事、连续性、模型适配和商用 QA 重写后再使用；
+7. 在项目状态与交付记录中登记调用时间、授权范围、使用条目和撤销状态。
+
+未授权时统一回复：
+
+```text
+【旧版提示词库未加载】
+该资料已接入可选模块，但当前任务未获得明确授权，因此未读取、未检索、未引用。
+授权指令：授权加载旧版成人提示词库，仅用于本次任务。
+```
 
 ---
 
@@ -226,6 +263,32 @@ entrypoint: SKILL.md
 - 素材、音乐、字体、品牌授权确认；
 - 平台与模型条款核验状态；
 - 人工终审负责人。
+
+### 4.6 旧库授权锚点
+
+```yaml
+legacy_corpus:
+  available: true
+  authorized: false
+  authorization_phrase:
+  authorized_by:
+  authorized_at:
+  scope: current_task
+  project_id:
+  source_commit: f2553bbba898331ed021095338ea638ce70ff01b
+  source_path: references/成人AV级视频生成完整提示词库.md
+  loaded_sections: []
+  transformed_outputs: []
+  revoked: false
+  revoked_at:
+```
+
+规则：
+
+- 新项目、新会话或任务边界不清时，`authorized` 重置为 `false`；
+- 用户输入 `撤销旧版提示词库授权` 后立即停止检索，并把 `revoked` 设为 `true`；
+- 授权只允许读取当前任务所需片段，不允许默认整库加载；
+- 旧库条目只作为候选参考，不能覆盖更高优先级事实与准入规则。
 
 ---
 
@@ -325,7 +388,7 @@ entrypoint: SKILL.md
 角色资产重点：面部、发型、体型比例、肤质、服装、配饰、可识别特征。  
 场景资产重点：空间拓扑、出入口、家具锚点、镜面、窗、灯源、材质。  
 服装资产重点：层次、开合方式、脱卸顺序、剩余状态。  
-道具资产重点：尺寸、材质、初始位置、交互方式。
+道具资产重点：尺寸、材质、初始位置、交互方式。  
 
 正式引用统一使用真实资产名：
 
@@ -445,6 +508,43 @@ Seedance 2.0 规则见 `references/seedance-2.0-adapter.md`。
 
 完整清单见 `references/commercial-qa.md`。
 
+### 模块 I｜旧版成人提示词库（可选、授权后运行）
+
+该模块进入 v13.1 的默认路由，但保持休眠。它不是默认知识库，也不是生成质量的必要条件。
+
+#### 未授权状态
+
+- 不读取历史文件；
+- 不搜索其中关键词；
+- 不引用旧版示例；
+- 不根据旧库推测用户意图；
+- 不把旧库内容写入项目状态或最终输出。
+
+#### 授权状态
+
+满足第 3 节 F 类授权后：
+
+1. 读取 `references/legacy-corpus-gate.md`；
+2. 从固定历史提交读取旧库原文；
+3. 按当前任务建立检索问题，而不是整库复制；
+4. 对候选内容执行以下转换：
+   - 去除重复、冲突和固定模板；
+   - 替换未经验证的模型 ID 与参数；
+   - 转换为可见、可拍、可连续的动作与声音描述；
+   - 加入人物动机、主动—回应、动作相位和尾帧桥接；
+   - 按目标模型单图、首尾帧、多模态或延长能力降级；
+   - 通过成年、自愿、授权和商用 QA；
+5. 只把转换后的结果交给主生产链，不直接把旧条目当成最终答案。
+
+#### 授权生命周期
+
+- 默认只在当前任务有效；
+- 用户切换项目、角色、素材或目标用途时重新授权；
+- 用户撤销后不得继续使用先前缓存；
+- 正式交付必须注明“旧库是否调用、调用范围、转换版本”。
+
+详细协议见 `references/legacy-corpus-gate.md`。
+
 ---
 
 ## 6｜影视叙事与镜头总原则
@@ -554,6 +654,9 @@ A 的动作 / 台词
 - `继续上一段`
 - `只修当前模块`
 - `全局重构`
+- `查看旧版提示词库状态`
+- `授权加载旧版成人提示词库，仅用于本次任务`
+- `撤销旧版提示词库授权`
 
 用户只上传剧情且未点名模块时回复：
 
@@ -583,7 +686,9 @@ A 的动作 / 台词
 4. 正式输出前读取对应输出契约和 QA；
 5. 只有处理 Seedance 2.0 时才加载其适配器；
 6. 只有处理亲密调度时才加载亲密场面参考；
-7. 不把参考文档中的示例当作固定模板复制。
+7. 默认读取 `references/legacy-corpus-gate.md` 的状态规则，但不得据此读取历史旧库；
+8. 只有当前任务获得明确授权后，才按 Gate 中的固定提交和路径读取旧库所需片段；
+9. 不把参考文档中的示例当作固定模板复制。
 
 映射：
 
@@ -595,6 +700,7 @@ A 的动作 / 台词
 | Seedance 2.0 | `references/seedance-2.0-adapter.md` |
 | 商用发布 / 交接 | `references/commercial-qa.md` |
 | 回归测试 | `tests/acceptance-cases.md` |
+| 旧版提示词库状态 / 授权加载 | `references/legacy-corpus-gate.md`；只有授权后才读取历史旧库 |
 | 来源核验 / 模型更新 | `references/sources.md` |
 
 ---
@@ -614,6 +720,8 @@ A 的动作 / 台词
 - 是否使用了目标模型真实支持的能力；
 - 是否展开了上一段尾帧，而不是写“沿用上一段”；
 - 是否集中列出禁止项；
-- 是否具备版本、素材映射、授权和人工终审记录。
+- 是否具备版本、素材映射、授权和人工终审记录；
+- 若使用旧版提示词库，是否存在本任务明确授权、最小范围检索、转换记录与撤销状态；
+- 未授权时是否完全没有读取、检索或引用旧库。
 
 只要任一关键项失败，不得标记为“商用就绪”。
